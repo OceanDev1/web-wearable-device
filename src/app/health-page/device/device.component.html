@@ -1,0 +1,159 @@
+<div class="page">
+  <!-- <div class="container_button_header_page">
+    <div class="cover_button_header">
+      <button
+        class="primary_button"
+        data-bs-toggle="modal"
+        data-bs-target="#createDevice"
+      >
+        <span class="text_primary_button c_center">
+          <span class="material-symbols-outlined"> add </span>
+        </span>
+      </button>
+    </div>
+  </div> -->
+
+  <div class="container_table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Stt</th>
+          <th scope="col">Tên thiết bị</th>
+          <th scope="col">Số serial</th>
+          <th scope="col">Địa chỉ MAC</th>
+          <th scope="col">Trạng thái</th>
+          <th scope="col">Người dùng</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of list_devices; let i = index">
+          <th scope="row">{{ i + 1 }}</th>
+          <td>{{ item.dv_name }}</td>
+          <td>{{ item.dv_serial_number }}</td>
+          <td>{{ item.dv_mac_address }}</td>
+          <td>
+            <span *ngIf="item.dv_status == 0">Đang sử dụng</span>
+            <span
+              *ngIf="item.dv_status == 1"
+              class="text_link"
+              (click)="selectDevice(item)"
+              data-bs-toggle="modal"
+              data-bs-target="#createDevice"
+              >Chưa sử dụng</span
+            >
+          </td>
+          <td>{{ this.sortPatientUsing(item._id) }}</td>
+          <td class="r_center action">
+            <span
+              (click)="showHistoryUsing(item)"
+              data-bs-toggle="modal"
+              data-bs-target="#historyUsing"
+              class="material-symbols-outlined"
+            >
+              history
+            </span>
+
+            <span
+              (click)="showMonitorDevice(item)"
+              class="material-symbols-outlined"
+            >
+              monitoring
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal SHOW HISTORY -->
+<div class="modal fade" id="historyUsing" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal_small">
+      <div class="modal-header container_modal_header row_space">
+        <span class="text_title_modal">Lịch sử sử dụng thiết bị</span>
+      </div>
+
+      <div class="modal_body container_modal_body row">
+        <div *ngFor="let item of list_devices_history" class="history_item">
+          <span>Người dùng: {{ sortNamePatient(item.patientId) }}</span>
+          <span>Ngày sử dụng: {{ item.timestamp | date : "dd/MM/yyyy" }}</span>
+        </div>
+      </div>
+
+      <div class="modal_footer container_modal_footer">
+        <div
+          data-bs-dismiss="modal"
+          class="outline_button_footer_modal c_center"
+        >
+          <span>Đóng</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Create Device -->
+<div class="modal fade" id="createDevice" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal_small">
+      <div class="modal-header container_modal_header row_space">
+        <span class="text_title_modal">Chỉ định bệnh nhân</span>
+      </div>
+
+      <div class="modal_body container_modal_body row">
+        <!-- <div class="container_input_form">
+          <span class="text_label_input">Số serial thiết bị</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="text"
+              placeholder="Nhập số serial"
+              [(ngModel)]="serial_device_form"
+            />
+          </div>
+        </div> -->
+
+        <div class="container_input_form">
+          <span class="text_label_input">Chỉ định bệnh nhân</span>
+
+          <select
+            (change)="selectPatient($event)"
+            class="form-select"
+            aria-label="Default select example"
+          >
+            <option value="" class="option_select_custom">
+              <span class="txt_14 txt_bold">Chọn bệnh nhân</span>
+            </option>
+            <option
+              *ngFor="let item of list_patients"
+              [value]="item._id"
+              class="option_select_custom"
+            >
+              <span class="txt_14 txt_bold"
+                >{{ item.pt_number }} - {{ item.pt_name }}</span
+              >
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal_footer container_modal_footer">
+        <div
+          data-bs-dismiss="modal"
+          class="outline_button_footer_modal c_center"
+        >
+          <span>Đóng</span>
+        </div>
+        <div
+          (click)="setPatineForDevice()"
+          class="primary_button_footer_modal c_center"
+        >
+          <span>Xác nhận</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

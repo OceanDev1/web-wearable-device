@@ -1,0 +1,149 @@
+<div class="page">
+  <div class="container_box_search">
+    <div class="cover_box_week">
+      <div (click)="prevNextDateWeek('prev')" class="btn_next_prev c_center">
+        <span class="material-symbols-outlined"> chevron_left </span>
+      </div>
+      <div class="cover_weeks c_center">
+        <span class="text_range_date"
+          >{{ range_date_show[0] }} - {{ range_date_show[1] }}</span
+        >
+      </div>
+
+      <div (click)="prevNextDateWeek('next')" class="btn_next_prev c_center">
+        <span class="material-symbols-outlined"> chevron_right </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container_calendar">
+    <div class="header_calendar">
+      <div class="row_day_item c_center">
+        <span class="text_title_calendar">Ngày</span>
+      </div>
+      <div class="row_day_item c_center">
+        <span class="text_title_calendar">Buổi sáng</span>
+      </div>
+      <div class="row_day_item c_center">
+        <span class="text_title_calendar">Buổi chiều</span>
+      </div>
+    </div>
+    <div class="body_calendar">
+      <div *ngFor="let item of list_data_appointment" class="day_item">
+        <div class="row_day_item c_center">
+          <span class="text_title_calendar">{{ item.day }}</span>
+          <span class="text_title_calendar">{{ item.date }}</span>
+        </div>
+        <div class="row_day_item c_center_line">
+          <span
+            *ngIf="item.morning.length == 0"
+            class="text_title_calendar txt_danger"
+            >Chưa có lịch hẹn
+          </span>
+
+          <span
+            (click)="showDataAppointment(data)"
+            *ngFor="let data of item.morning"
+            data-bs-toggle="modal"
+            data-bs-target="#dataAppointment"
+            class="text_title_calendar text_link"
+            >{{ data.time }}:00 : {{ data.patient.pt_number }} -
+            {{ data.patient.pt_name }}
+            <span
+              [ngClass]="{
+                txt_danger: data.status == 0,
+                txt_success: data.status == 1
+              }"
+              >({{ data.status == 0 ? "Chưa khám" : "Đã khám" }})</span
+            ></span
+          >
+        </div>
+        <div class="row_day_item c_center_line">
+          <span
+            *ngIf="item.afternoon.length == 0"
+            class="text_title_calendar txt_danger"
+            >Chưa có lịch hẹn
+          </span>
+
+          <span
+            (click)="showDataAppointment(data)"
+            *ngFor="let data of item.afternoon"
+            data-bs-toggle="modal"
+            data-bs-target="#dataAppointment"
+            class="text_title_calendar text_link"
+            >{{ data.time }}:00 : {{ data.patient.pt_number }} -
+            {{ data.patient.pt_name }}
+            <span
+              [ngClass]="{
+                txt_danger: data.status == 0,
+                txt_success: data.status == 1
+              }"
+              >({{ data.status == 0 ? "Chưa khám" : "Đã khám" }})</span
+            ></span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Create Device -->
+<div class="modal fade" id="dataAppointment" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal_small">
+      <div class="modal-header container_modal_header row_space">
+        <span class="text_title_modal">Thông tin lịch hẹn</span>
+      </div>
+
+      <div
+        *ngIf="!!data_appointment"
+        class="modal_body container_modal_body row"
+      >
+        <span class="text_label_input">Thông tinh bệnh nhân</span>
+        <ul class="ul_item">
+          <li
+            *ngFor="let item of data_appointment.data_patients"
+            class="li_item"
+          >
+            <span class="txt_14">{{ item.title }}: </span>
+            <span class="txt_14 txt_bold">{{ item.value }}</span>
+          </li>
+        </ul>
+
+        <span class="text_label_input">Lần khám gần nhất</span>
+        <ul class="ul_item">
+          <li
+            *ngFor="let item of data_appointment.data_medical"
+            class="li_item"
+          >
+            <span class="txt_14">{{ item.title }}: </span>
+            <span class="txt_14 txt_bold">{{ item.value }}</span>
+          </li>
+        </ul>
+
+        <span class="text_label_input"
+          >Giờ hẹn: {{ data_appointment.time_appointment }}</span
+        >
+        <span class="text_label_input"
+          >Ngày hẹn: {{ data_appointment.date_appointment }}</span
+        >
+      </div>
+
+      <div class="modal_footer container_modal_footer">
+        <div
+          data-bs-dismiss="modal"
+          class="outline_button_footer_modal c_center"
+        >
+          <span>Đóng</span>
+        </div>
+        <div
+          *ngIf="!!data_appointment && data_appointment.status == 0"
+          (click)="updateStatusAp(data_appointment)"
+          class="primary_button_footer_modal c_center"
+        >
+          <span>Đã tiếp nhận</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

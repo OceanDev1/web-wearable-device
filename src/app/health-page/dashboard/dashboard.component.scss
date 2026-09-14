@@ -1,0 +1,115 @@
+.page {
+  height: 100%;
+  width: 100%;
+
+  .container_dashboard {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr minmax(300px, 350px);
+    gap: 0 10px;
+  }
+}
+
+.container_total {
+  height: 100%;
+
+  .total_item {
+    height: 200px;
+    border: 1px solid var(--border_color);
+    border-radius: 8px;
+
+    .cover_logo_item {
+      height: 80px;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0 15px;
+      gap: 0 10px;
+
+      .total_title {
+        font-size: 16px;
+        color: var(--placeholder_text_color);
+      }
+
+      .circle_logo {
+        height: 50px;
+        width: 50px;
+        border-radius: 100rem;
+        background-color: var(--success_second_color);
+
+        img {
+          height: 30px;
+          width: 30px;
+        }
+      }
+    }
+
+    .cover_total_number {
+      height: calc(200px - 80px);
+      width: 100%;
+
+      .total_number {
+        font-size: 80px;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.content_list_total {
+  height: auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.cover_appointment {
+  height: auto;
+  width: 100%;
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px 0;
+
+  .appointment_item {
+    height: 30px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0 10px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border_color);
+  }
+}
+
+.container_notification {
+  height: 100%;
+  border: 1px solid var(--border_color);
+  border-radius: 4px;
+
+  .container_body{
+    height: calc(100% - 40px);
+    width: 100%;
+    padding: 10px;
+
+    .notification_item{
+        height: 26px;
+        width: 100%;
+        border-bottom: 1px solid var(--border_color);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+  }
+}
+
+.container_header {
+  height: 40px;
+  width: 100%;
+  border-bottom: 1px solid var(--border_color);
+  padding: 0 10px;
+}

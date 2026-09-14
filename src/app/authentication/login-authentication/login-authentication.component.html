@@ -1,0 +1,49 @@
+<div class="container_page">
+  <div class="cover_page c_center">
+    <div class="container_form">
+      <div class="container_logo c_center">
+        <img
+          src="./../../../assets/5d5afed8aebf67f3f1f1bfb754146225.png"
+          class="logo"
+          alt=""
+        />
+      </div>
+
+      <span class="text_title_box">Phần mềm quản lý</span>
+
+      <div class="cover_form">
+        <div class="container_input_form">
+          <span class="text_label_input">Số điện thoại</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="text"
+              placeholder="Nhập số điện thoại"
+              [(ngModel)]="act_phone"
+            />
+          </div>
+        </div>
+
+        <div class="container_input_form">
+          <span class="text_label_input">Mật khẩu</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="password"
+              placeholder="Nhập tài khoản"
+              [(ngModel)]="act_password"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="cover_button">
+        <button (click)="loginAccount()" class="primary_button">
+            <span class="text_primary_button">Đăng nhập</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

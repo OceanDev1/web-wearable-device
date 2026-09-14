@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="container_dashboard">
+    <div class="container_total">
+      <div class="content_list_total">
+        <div *ngIf="!!data_dashboard" class="total_item">
+          <div class="cover_logo_item">
+            <div class="circle_logo c_center">
+              <img src="./../../../assets/patient.png" alt="" />
+            </div>
+
+            <span class="total_title">Bệnh nhân</span>
+          </div>
+
+          <div class="cover_total_number c_center">
+            <span class="total_number">{{
+              data_dashboard.patients.length
+            }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="!!data_dashboard" class="total_item">
+          <div class="cover_logo_item">
+            <div class="circle_logo c_center">
+              <img src="./../../../assets/smartwatch.png" alt="" />
+            </div>
+
+            <span class="total_title">Thiết bị</span>
+          </div>
+
+          <div class="cover_total_number c_center">
+            <span class="total_number">{{
+              data_dashboard.devices.length
+            }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="!!data_dashboard" class="total_item">
+          <div class="cover_logo_item">
+            <div class="circle_logo c_center">
+              <img src="./../../../assets/appointment.png" alt="" />
+            </div>
+
+            <span class="total_title">Lịch hẹn hôm nay</span>
+          </div>
+
+          <div class="cover_total_number">
+            <div class="cover_appointment">
+              <div
+                *ngIf="data_dashboard.appointment.length == 0"
+                class="appointment_item"
+              >
+                <span class="txt_14 txt_danger">Không có lịch hẹn</span>
+              </div>
+              <div
+                *ngFor="let item of data_dashboard.appointment"
+                class="appointment_item"
+              >
+                <span>{{ item.ap_time }}:00: </span>
+                <span
+                  >{{ item.ap_patient.pt_number }} -
+                  {{ item.ap_patient.pt_name }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container_notification">
+      <div class="container_header c_center_line">
+        <span class="txt_14">Thông báo</span>
+      </div>
+
+      <div class="container_body">
+        <div class="cover_list">
+            <div class="notification_item">
+                <span class="txt_14 txt_danger">Chưa có thông báo</span>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

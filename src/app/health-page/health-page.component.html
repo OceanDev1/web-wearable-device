@@ -1,0 +1,62 @@
+<div class="container_page">
+  <div class="cover_page">
+    <div class="dashboard_menu">
+      <div class="content_menu_logo">
+        <img
+          src="./../../assets/5d5afed8aebf67f3f1f1bfb754146225.png"
+          alt=""
+          class="logo"
+        />
+      </div>
+
+      <div class="content_menu_list">
+        <div
+          *ngFor="let item of menus; let i = index"
+          class="menu_item"
+          (click)="changePage(item)"
+          [ngClass]="{ menu_item_active: i == menu_active }"
+        >
+          <div class="content_menu c_center">
+            <span class="material-symbols-outlined"> {{ item.icon }} </span>
+            <span class="text_menu">{{ item.name }}</span>
+
+            <div class="border_active_menu"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content_menu_footer">
+        <div class="menu_item">
+          <div (click)="logOut()" class="content_menu menu_logout c_center">
+            <span class="material-symbols-outlined"> logout </span>
+            <span class="text_menu">Đăng xuất</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard_content">
+      <div class="dashboard_content_header">
+        <span class="title_content">{{ title_page }}</span>
+
+        <div class="header_information">
+          <div class="account_information">
+            <img
+              src="./../../assets/man.png"
+              alt=""
+              class="avatar"
+            />
+            <div *ngIf="!!account_detail" class="account_name">
+              <span class="text_name">{{ account_detail.pt_name }}</span>
+              <span class="text_sub_name">{{ account_detail.pt_number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard_content_main">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

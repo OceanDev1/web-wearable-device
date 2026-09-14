@@ -1,0 +1,754 @@
+<div class="page">
+  <div class="container_button_header_page">
+    <div class="cover_button_header">
+      <button
+        class="primary_button"
+        data-bs-toggle="modal"
+        data-bs-target="#createPatient"
+      >
+        <span class="text_primary_button c_center">
+          <span class="material-symbols-outlined"> add </span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="container_table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Stt</th>
+          <th scope="col">Mã bệnh nhân</th>
+          <th scope="col">Họ và tên</th>
+          <th scope="col">Giới tính</th>
+          <th scope="col">Ngày sinh</th>
+          <th scope="col">Tuổi</th>
+          <th scope="col">Nhiệt độ</th>
+          <th scope="col">Nhịp tim</th>
+          <th scope="col">SpO2</th>
+          <th scope="col">PPM</th>
+          <th scope="col">Sức khỏe</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of list_patients; let i = index">
+          <th scope="row">{{ i + 1 }}</th>
+          <td>{{ item.pt_number }}</td>
+          <td>{{ item.pt_name }}</td>
+          <td>{{ item.pt_gender == "male" ? "Nam" : "Nữ" }}</td>
+          <td>{{ convertBirthDate(item.pt_birth) }}</td>
+          <td>{{ calculateYearOld(item.pt_birth) }}</td>
+          <td>{{ item.act_body_record.temperature }} °C</td>
+          <td>{{ item.act_body_record.heart }} bpm</td>
+          <td>{{ item.act_body_record.sp }} %</td>
+          <td>{{ item.act_body_record.pm }}</td>
+          <td
+            [ngClass]="{
+              txt_danger: index_patient_warning.includes(item._id),
+              txt_success: !index_patient_warning.includes(item._id)
+            }"
+          >
+            {{
+              index_patient_warning.includes(item._id)
+                ? "Nguy cơ"
+                : "Bình thường"
+            }}
+          </td>
+          <td class="c_center">
+            <span
+              (click)="selectPatient(item)"
+              data-bs-toggle="modal"
+              data-bs-target="#detailPatient"
+              class="material-symbols-outlined"
+            >
+              note_alt
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal DETAIL -->
+<div class="modal fade" id="detailPatient" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal_small">
+      <div class="modal-header container_modal_header row_space">
+        <span class="text_title_modal">Thông tin bệnh nhân</span>
+
+        <div class="cover_button_header c_center">
+          <button
+            class="primary_button"
+            data-bs-toggle="modal"
+            data-bs-target="#updateInformationPatient"
+          >
+            <span class="text_primary_button c_center"> Cập nhật </span>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!!patient_detail" class="modal_body container_modal_body row">
+        <div class="container_show_data">
+          <span class="text_title">Mã bệnh nhân:</span>
+          <span class="text_information">{{ patient_detail.pt_number }}</span>
+        </div>
+
+        <div class="container_show_data">
+          <span class="text_title">Tên bệnh nhân:</span>
+          <span class="text_information">{{ patient_detail.pt_name }}</span>
+        </div>
+
+        <div class="container_show_data">
+          <span class="text_title">Năm sinh -- Tuổi:</span>
+          <span class="text_information"
+            >{{ convertBirthDate(patient_detail.pt_birth) }} -
+            {{ calculateYearOld(patient_detail.pt_birth) }} tuổi</span
+          >
+        </div>
+
+        <div class="container_show_data">
+          <span class="text_title">Thiết bị sử dụng:</span>
+          <div class="show_device">
+            <div *ngFor="let item of patient_detail.pt_devices; let i = index" class="device_item row_space">
+              <span class="text_device_item">{{ sortDetailDevice(item.device_id)}}</span>
+
+              <div class="c_center">
+                <span (click)="removeDeviceInPatient(item.device_id, i)" class="material-symbols-outlined icon_item_list txt_danger"> delete </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container_show_data">
+          <span class="text_title">Thông tin sức khỏe:</span>
+          <span class="text_information"></span>
+        </div>
+
+        <div
+          *ngFor="let item of patient_detail.pt_examinations"
+          class="container_show_data_info"
+        >
+          <div class="content_data_health">
+            <span class="text_information"
+              >Chiều cao: {{ item.act_tall }} cm</span
+            >
+            <span class="text_information"
+              >Cân nặng: {{ item.act_height }} kg</span
+            >
+            <span class="text_information"
+              >Huyết áp: {{ item.act_BP }} mmHg</span
+            >
+            <span class="text_information"
+              >Cholesterol máu:
+              {{ item.act_cholesterol }}
+              mm/dl</span
+            >
+            <span class="text_information"
+              >Đường huyết lúc đói:
+              {{
+                item.act_fastingBS == 0 ? "Dưới 120 mg/dl" : "Trên 120 mg/dl"
+              }}</span
+            >
+            <span class="text_information"
+              >Điện tâm đồ:
+              {{
+                  item.act_ekg == "0"
+                    ? "Bình thường"
+                    : item.act_ekg == "1"
+                    ? "Có bất thường sóng ST-T"
+                    : "LVH"
+              }}</span
+            >
+            <span class="text_information"
+              >Đău thắt ngực:
+              {{ item.act_angina == "0" ? "Không" : "Có" }}</span
+            >
+            <span class="text_information"
+              >Đău ngực (Chest paint):
+              {{
+                item.act_chest == "1"
+                  ? "Typical angina"
+                  : item.act_chest == "2"
+                  ? "Atypical Angina"
+                  : item.act_chest == "3"
+                  ? "Non-anginal Pain"
+                  : item.act_chest == "4"
+                  ? "Asymptomatic"
+                  : ""
+              }}</span
+            >
+            <span class="text_information"
+              >Bác sĩ khám:
+              <span class="text_doctor">
+                {{ item.doctor.number }} -
+                {{ item.doctor.name }}
+              </span>
+            </span>
+            <span class="text_information"
+              >Ngày cập nhật:
+              {{ item.timestamps | date : "dd-MM-yyyy hh:mm a" }}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="modal_footer container_modal_footer">
+        <div
+          data-bs-dismiss="modal"
+          class="outline_button_footer_modal c_center"
+        >
+          <span>Đóng</span>
+        </div>
+        <div
+          (click)="createNewPatient()"
+          class="primary_button_footer_modal c_center"
+        >
+          <span>Xác nhận</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal UPDATE -->
+<div class="modal fade" id="updateInformationPatient" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal_small">
+      <div class="modal-header container_modal_header row_space">
+        <span class="text_title_modal">Cập nhật thông tin</span>
+      </div>
+
+      <div *ngIf="!!patient_detail" class="modal_body container_modal_body row">
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Tên bệnh nhân</span>
+
+            <div class="cover_input">
+              <input
+                class="custom_input"
+                type="text"
+                placeholder="Nhập tên bệnh nhân"
+                [(ngModel)]="patient_name"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="container_input_form">
+            <span class="text_label_input">Chiều cao</span>
+
+            <div class="cover_input">
+              <input
+                class="custom_input"
+                type="text"
+                placeholder="Nhập chiều cao"
+                [(ngModel)]="patient_tall"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="container_input_form">
+            <span class="text_label_input">Cân nặng</span>
+
+            <div class="cover_input">
+              <input
+                class="custom_input"
+                type="text"
+                placeholder="Nhập cân nặng"
+                [(ngModel)]="patient_height"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- CHEST PAINT -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Đău ngực (Chest paint)</span>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="CP"
+                id="CP1"
+                value="1"
+                [checked]="patient_CP == '1'"
+                (change)="checkValueData('cp', $event)"
+              />
+              <label class="form-check-label" for="CP1"> Typical Angina </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="CP"
+                id="CP2"
+                value="2"
+                [checked]="patient_CP == '2'"
+                (change)="checkValueData('cp', $event)"
+              />
+              <label class="form-check-label" for="CP2">
+                Atypical Angina
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="CP"
+                id="CP3"
+                value="3"
+                [checked]="patient_CP == '3'"
+                (change)="checkValueData('cp', $event)"
+              />
+              <label class="form-check-label" for="CP3">
+                Non-anginal Pain
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="CP"
+                id="CP4"
+                value="4"
+                [checked]="patient_CP == '4'"
+                (change)="checkValueData('cp', $event)"
+              />
+              <label class="form-check-label" for="CP3"> Asymptomatic </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUYET AP -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Huyết áp (BP)</span>
+
+            <div class="cover_input">
+              <input
+                class="custom_input"
+                type="text"
+                placeholder="Nhập huyết áp (BP)"
+                [(ngModel)]="patient_BP"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- TAM TRANG ST -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Rối loạn tâm trạng (ST)</span>
+
+            <div class="cover_input">
+              <input
+                class="custom_input"
+                type="text"
+                placeholder="Nhập rối loạn tâm trạng"
+                [(ngModel)]="patient_ST"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- CHENH LENH DIEN TAM DO -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input"
+              >Độ dốc của đoạn ST tập luyện đỉnh cao (Slope ST)</span
+            >
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="SST"
+                id="SST1"
+                value="1"
+                [checked]="patient_slope_ST == '1'"
+                (change)="checkValueData('sst', $event)"
+              />
+              <label class="form-check-label" for="SST1"> Upsloping </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="SST"
+                id="SST2"
+                value="2"
+                [checked]="patient_slope_ST == '2'"
+                (change)="checkValueData('sst', $event)"
+              />
+              <label class="form-check-label" for="SST2"> Flat </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="SST"
+                id="SST3"
+                value="3"
+                [checked]="patient_slope_ST == '3'"
+                (change)="checkValueData('sst', $event)"
+              />
+              <label class="form-check-label" for="SST3"> Downsloping </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cholesterol -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Nồng độ Cholesterol trong máu</span>
+
+            <div class="cover_input">
+              <input
+                class="custom_input"
+                type="text"
+                placeholder="Nhập Cholesterol"
+                [(ngModel)]="patient_cholesterol"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- DUONG HUYET -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Đường huyết lúc đói</span>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="BS"
+                id="BS1"
+                value="1"
+                [checked]="patient_fastingBS == 1"
+                (change)="checkValueData('bs', $event)"
+              />
+              <label class="form-check-label" for="BS1"> Trên 120 mg/dl </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="BS"
+                id="BS2"
+                value="0"
+                [checked]="patient_fastingBS == 0"
+                (change)="checkValueData('bs', $event)"
+              />
+              <label class="form-check-label" for="BS2">
+                Nhỏ hơn 120 mg/dl
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIEN TAM DO -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Điện tâm đồ lúc nghỉ</span>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="ECG"
+                id="ECG1"
+                value="0"
+                [checked]="patient_ECG == '0'"
+                (change)="checkValueData('ecg', $event)"
+              />
+              <label class="form-check-label" for="ECG1"> Bình thường </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="ECG"
+                id="ECG2"
+                value="1"
+                [checked]="patient_ECG == '1'"
+                (change)="checkValueData('ecg', $event)"
+              />
+              <label class="form-check-label" for="ECG2">
+                Có bất thường sóng ST-T
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="ECG"
+                id="ECG3"
+                value="2"
+                [checked]="patient_ECG == '2'"
+                (change)="checkValueData('ecg', $event)"
+              />
+              <label class="form-check-label" for="ECG3"> LVH </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- DAU THAT NGUC -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Đău thắt ngực</span>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="Exercise"
+                id="Exercise1"
+                value="1"
+                [checked]="patient_angina == '1'"
+                (change)="checkValueData('angina', $event)"
+              />
+              <label class="form-check-label" for="Exercise1"> Có </label>
+            </div>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="Exercise"
+                id="Exercise2"
+                value="0"
+                [checked]="patient_angina == '0'"
+                (change)="checkValueData('angina', $event)"
+              />
+              <label class="form-check-label" for="Exercise2"> Không </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- THAL -->
+        <div class="col-md-12">
+          <div class="container_input_form">
+            <span class="text_label_input">Thallium</span>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="Thallium"
+                id="Thallium1"
+                value="3"
+                [checked]="patient_thallium == '3'"
+                (change)="checkValueData('thallium', $event)"
+              />
+              <label class="form-check-label" for="Thallium1"> Normal </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="Thallium"
+                id="Thallium2"
+                value="6"
+                [checked]="patient_thallium == '6'"
+                (change)="checkValueData('thallium', $event)"
+              />
+              <label class="form-check-label" for="Thallium2">
+                Fixed Defect
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="Thallium"
+                id="Thallium3"
+                value="7"
+                [checked]="patient_thallium == '7'"
+                (change)="checkValueData('thallium', $event)"
+              />
+              <label class="form-check-label" for="Thallium3">
+                Reversable Defect
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal_footer container_modal_footer">
+        <div
+          data-bs-dismiss="modal"
+          class="outline_button_footer_modal c_center"
+        >
+          <span>Đóng</span>
+        </div>
+        <div
+          (click)="updatePatient()"
+          class="primary_button_footer_modal c_center"
+        >
+          <span>Cập nhật</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal CREATE -->
+<div class="modal fade" id="createPatient" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal_small">
+      <div class="modal-header container_modal_header row_space">
+        <span class="text_title_modal">Thêm bệnh nhân</span>
+      </div>
+
+      <div class="modal_body container_modal_body row">
+        <div class="container_input_form">
+          <span class="text_label_input">Tên bệnh nhân</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="text"
+              placeholder="Nhập tên bệnh nhân"
+              [(ngModel)]="patient_name"
+            />
+          </div>
+        </div>
+
+        <div class="container_input_form">
+          <span class="text_label_input">Số điện thoại</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="text"
+              placeholder="Nhập số điện thoại"
+              [(ngModel)]="patient_phone"
+            />
+          </div>
+        </div>
+
+        <div class="container_input_form">
+          <span class="text_label_input">Ngày / tháng / năm sinh</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="date"
+              [(ngModel)]="patient_birth"
+            />
+          </div>
+        </div>
+
+        <div class="container_input_form">
+          <span class="text_label_input">Giới tính</span>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="flexRadioDefault"
+              id="flexRadioDefault1"
+              value="male"
+              (change)="selectSex($event)"
+            />
+            <label
+              class="form-check-label text_title_modal"
+              for="flexRadioDefault1"
+            >
+              Nam
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="flexRadioDefault"
+              id="flexRadioDefault2"
+              value="female"
+              (change)="selectSex($event)"
+            />
+            <label
+              class="form-check-label text_title_modal"
+              for="flexRadioDefault2"
+            >
+              Nữ
+            </label>
+          </div>
+        </div>
+
+        <div class="container_input_form">
+          <span class="text_label_input">Địa chỉ nhà</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="text"
+              placeholder="Địa chỉ nhà"
+              [(ngModel)]="patient_address"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal_footer container_modal_footer">
+        <div
+          data-bs-dismiss="modal"
+          class="outline_button_footer_modal c_center"
+        >
+          <span>Đóng</span>
+        </div>
+        <div
+          (click)="createNewPatient()"
+          class="primary_button_footer_modal c_center"
+        >
+          <span>Xác nhận</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal EXP -->
+<div class="modal fade" id="example" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal_small">
+      <div class="modal-header container_modal_header row_space">
+        <span class="text_title_modal">Thêm bệnh nhân</span>
+      </div>
+
+      <div class="modal_body container_modal_body row">
+        <div class="container_input_form">
+          <span class="text_label_input">Mật khẩu</span>
+
+          <div class="cover_input">
+            <input
+              class="custom_input"
+              type="password"
+              placeholder="Nhập tài khoản"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal_footer container_modal_footer">
+        <div
+          data-bs-dismiss="modal"
+          class="outline_button_footer_modal c_center"
+        >
+          <span>Đóng</span>
+        </div>
+        <div class="primary_button_footer_modal c_center">
+          <span>Xác nhận</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
