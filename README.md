@@ -49,6 +49,10 @@ File cấu hình nằm tại `src/environments/`:
 
 Cấu hình kết nối MQTT, API backend... cần được khai báo trong các file này trước khi chạy hoặc build ứng dụng.
 
+### ⚠️ Cảnh báo bảo mật
+
+`src/utils/configs/IApi.ts` đang hard-code thẳng IP + port server thật (`118.69.168.44:9991`) trong code. Repo đang public nên đây là thông tin hạ tầng bị lộ công khai. Cần chuyển `SERVER_MAIN` sang đọc từ `environment.ts`/`environment.prod.ts` thay vì hard-code trong file này.
+
 ## Cấu trúc thư mục
 
 ```
@@ -136,6 +140,10 @@ Configuration files are located in `src/environments/`:
 - `environment.prod.ts`: used for production (automatically substituted when building with `--configuration production`).
 
 MQTT connection settings, backend API URLs, etc. must be configured in these files before running or building the app.
+
+### ⚠️ Security Warning
+
+`src/utils/configs/IApi.ts` hard-codes the real server IP and port (`118.69.168.44:9991`) directly in the source. Since this repo is public, that infrastructure detail is exposed. `SERVER_MAIN` should be read from `environment.ts`/`environment.prod.ts` instead of being hard-coded here.
 
 ## Project structure
 
